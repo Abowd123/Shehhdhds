@@ -1,0 +1,30 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+
+# ═══ لا كاش طويل بلا بصمة ═══
+# أسماء الملفّات ثابتة (app.js · theme.css)، فـimmutable يعني
+# مستخدماً عالقاً سنةً على نسخةٍ قديمة بعد أي ترقية. no-cache
+# تُجبر المتصفّح على التحقّق (304 إن لم يتغيّر) فلا كلفةَ على
+# النسخة نفسها، ولا جمودَ عند الترقية.
+# والنمط ببادئة "/" كما في كتلة /* أعلاه — كان "*.js" بلا بادئة،
+# والمرجَّح أنه لا يُطابق شيئاً في Netlify.
+# وحين يُضاف بناءٌ يُنتِج أسماءً مبصومة (app.a1b2c3.js) يُعاد الكاش
+# الطويل — لا قبل ذلك.
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "no-cache"
