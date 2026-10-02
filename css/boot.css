@@ -1,0 +1,59 @@
+/* ═══ شاشة الإقلاع ═══
+   كانت كتلة <style> مضمَّنة في index.html — وذلك يستلزم 'unsafe-inline'
+   في style-src. صارت ملفاً يُحمَّل قبل بقيّة الأنماط فتظهر الشاشة
+   قبل أن يبدأ أيُّ سكربت (script-src 'self' لا يسمح بغير الملفات). */
+ /* ═══ شاشة الإقلاع — CSS مضمّن فقط، لا سكربت هنا (script-src 'self') ═══ */
+ #splash{
+  position:fixed; inset:0; z-index:99999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:16px;
+  background:radial-gradient(120% 120% at 50% 32%,
+   var(--bg2,#151a20) 0%, var(--bg4,#0a0c10) 72%);
+  color:var(--fg,#edf1f5);
+  font-family:"Segoe UI","Noto Sans Arabic","IBM Plex Sans Arabic","Dubai",
+   Tahoma,Arial,sans-serif;
+  opacity:1; visibility:visible;
+  transition:opacity .35s ease, visibility 0s linear 0s;
+ }
+ #splash.splash-hide{
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .35s ease, visibility 0s linear .35s;
+ }
+ #splash .splash-mark{
+  inline-size:76px; block-size:76px; display:block; border-radius:18px;
+  box-shadow:var(--sh3,0 22px 54px -14px rgba(0,0,0,.62));
+  animation:splash-pulse 1.7s ease-in-out infinite;
+ }
+ #splash .splash-name{
+  font-size:22px; font-weight:600; letter-spacing:.2px;
+ }
+ #splash .splash-name b{ color:var(--brand,#d1a85f); font-weight:700; }
+ #splash .splash-tag{
+  font-size:12.5px; color:var(--fg3,#76808c); direction:rtl;
+ }
+ #splash .splash-bar{
+  inline-size:130px; block-size:3px; border-radius:2px; overflow:hidden;
+  background:var(--ln,#272e37); margin-block-start:4px;
+ }
+ #splash .splash-bar i{
+  display:block; inline-size:40%; block-size:100%; border-radius:2px;
+  background:var(--brand,#d1a85f);
+  animation:splash-run 1.15s ease-in-out infinite;
+ }
+ @keyframes splash-pulse{
+  0%,100%{ transform:scale(1); opacity:1 }
+  50%{ transform:scale(1.05); opacity:.86 }
+ }
+ @keyframes splash-run{
+  0%{ transform:translateX(-130%) }
+  100%{ transform:translateX(330%) }
+ }
+ @media (prefers-reduced-motion:reduce){
+  #splash .splash-mark, #splash .splash-bar i{ animation:none }
+  #splash{ transition:opacity .01s linear }
+ }
+
+/* ═══ noscript ═══ */
+.ns-box{padding:16px; background:#3a1c1c; color:#ffd9d9;
+ font:14px/1.7 Tahoma,Arial,sans-serif}
+.ns-box code.ns-cmd{direction:ltr; display:inline-block}
