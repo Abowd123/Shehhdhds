@@ -1,0 +1,210 @@
+/* === touch.css — طبقة اللمس والتجاوب — CivilDraft UI 2.0 ===
+   يُحمّل أخيراً في index.html بعد كل الأنماط.
+   كل قواعده داخل pointer:coarse أو max-width فلا تمس الديسكتوب بالماوس.
+*/
+
+:root{
+ --touch:44px;
+ --touch-sm:36px;
+ --touch-gap:8px;
+ --dock-touch:360px;
+}
+
+/* ─── 1. تكبير كل أهداف اللمس لـ 44px ─── */
+@media (pointer:coarse){
+  :root{ --r2:12px; --r3:16px; }
+
+  /* الشريط */
+  .rbBig{width:72px !important; min-height:64px; gap:6px; padding:8px 4px 6px}
+  .rbBig .lb{font-size:11.5px}
+  .rbSm{min-height:44px !important; padding:8px 12px; font-size:13px}
+  .rbTab{padding:10px 18px; font-size:13px}
+  .rbPane{scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch}
+  .rbp{scroll-snap-align:start}
+
+  /* الوصول السريع وشريط الأدوات */
+  #qat button{width:44px; height:44px}
+  #tools button{min-height:44px; padding:8px 14px; font-size:13px}
+  #tools{gap:6px; padding:8px 12px}
+
+  /* شريط الخيارات - حقول أكبر + لوحة أرقام */
+  #optbar{padding:8px 12px; gap:10px; min-height:48px}
+  #optbar input[type=text],
+  #optbar input[type=number],
+  #optbar select{min-height:44px; min-width:88px; font-size:14px; padding:6px 10px}
+  #optbar .of>span{font-size:13px}
+  #optbar .seg button{min-height:44px; min-width:64px; font-size:14px; padding:6px 14px}
+
+  /* الإرساء */
+  .dsz{inline-size:12px}
+  .dsz::after{content:""; position:absolute; inset:0 -6px}
+  .strip{inline-size:48px}
+  .strip button{inline-size:44px; min-height:44px; padding:10px 2px}
+  .zTabs button{min-height:36px; padding:6px 10px}
+
+  /* الحالة والأوامر */
+  #status button{min-height:36px; padding:6px 12px}
+  #clIn{padding:10px 14px; font-size:14px}
+  #clPrompt{font-size:13px}
+  #side button, #sideE button{min-height:40px}
+
+  /* إلغاء الـ blur الثقيل على الأجهزة المتوسطة */
+  #top, #status, #navbar, #cmdline{
+    backdrop-filter:none !important;
+    background:var(--bg2) !important;
+  }
+}
+
+/* ─── 2. تابلت أفقي 768-1100px: إخفاء شريط الأدوات المكرر ─── */
+@media (max-width:1100px) and (pointer:coarse),
+       (max-width:900px){
+  #tools{display:none !important}
+  /* عائم داخل #stage: على اللمس يُرسى أسفل الرسم قرب الإبهام */
+  #optbar{
+    inset-block-start:auto;
+    inset-block-end:8px;
+    box-shadow:0 -4px 12px rgba(0,0,0,.15);
+  }
+}
+
+/* ─── 3. تابلت / «موقع سطح المكتب» على الهاتف: العمود مُرسى على الجانب ───
+   كان هنا «درجٌ» ثابت الموضع يُخفى بـ إزاحةٍ أفقية سالبة في RTL. لكن في RTL
+   يكون inline-start هو اليمين، فالإزاحة لليسار تُدخل الدرج إلى الشاشة بدل
+   إخراجه: فيطفو العمود كلّه في منتصف الشاشة فوق الرسم والشريط بلا طريقةٍ
+   لإغلاقه. صار العمود المُرسى العاديّ (كما في سطح المكتب): على حافة الجهة
+   الطرفية، والرسم يضيق بجواره. والدرج/الورقة السفلية للجوال وحده (القسم 4). */
+@media (max-width:1100px) and (min-width:769px) and (pointer:coarse){
+  #side, #sideE{max-width:42vw}
+  /* فاصل تغيير العرض أعرض ليُمسَك بالإصبع */
+  .dsz{inline-size:12px}
+  .dockClose{display:none !important}
+}
+
+/* ─── 4. جوال عمودي <768px: شريط سفلي + Bottom Sheet ─── */
+@media (max-width:768px){
+  /* الشريط يصبح سفلي */
+  #ribbon{
+    position:fixed;
+    bottom:0; inset-inline:0;
+    z-index:40;
+    border-top:1px solid var(--ln2);
+    border-bottom:none;
+    background:var(--bg2);
+    box-shadow:0 -8px 24px rgba(0,0,0,.25);
+  }
+  #rbTabs{
+    justify-content:space-around;
+    padding:0 4px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  #rbTabs::-webkit-scrollbar{display:none}
+  .rbTab{flex:1; justify-content:center; padding:10px 6px; font-size:12px}
+  .rbTab .kt{display:none !important}
+  #rbPanes{max-height:42vh; overflow-y:auto}
+  .rbPane{min-height:72px}
+  .rbBig{width:64px; min-height:58px}
+
+  /* Dock يصبح Bottom Sheet */
+  #side, #sideE{
+    position:fixed !important;
+    inset:auto 0 var(--rbH,64px) 0;
+    width:100% !important;
+    max-height:45vh;
+    z-index:35;
+    transform:translateY(100%);
+    transition:transform 260ms var(--ease);
+    border-top:1px solid var(--ln2);
+    border-inline:none;
+    border-radius:var(--r3) var(--r3) 0 0;
+  }
+  #side.open, #sideE.open, #side.peek, #sideE.peek{transform:translateY(0) !important}
+  .dsz, .strip{display:none !important}
+
+  /* المحتوى لا يختفي خلف الشريط السفلي */
+  body{padding-bottom:var(--rbH,64px)}
+  #work{padding-bottom:0}
+
+  /* الحالة مختصرة */
+  #stItems>button .lb{display:none}
+  #stItems>button.wide .lb{display:inline}
+  #stInfo{display:none}
+  #log{height:80px; max-height:22vh}
+  #cmdline{padding:10px 12px}
+
+  /* زر FAB لفتح الخصائص */
+  #fabDock{
+    position:fixed;
+    inset-inline-end:12px;
+    bottom:calc(var(--rbH,64px) + 12px);
+    z-index:39;
+    width:48px; height:48px;
+    border-radius:50%;
+    background:var(--ac);
+    color:#fff;
+    border:none;
+    box-shadow:var(--sh3);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+  }
+}
+
+/* ─── 5. سحب الشريط بالإصبع ─── */
+.rbPane{
+  touch-action:pan-x;
+  overscroll-behavior-x:contain;
+}
+
+/* ─── 6. ترويسة الجوال: لا تُوسّع الصفحة ───
+   أزرار #qat بحجم اللمس (44px) مع زرّ التطبيق تتجاوز 390px فكان المتصفّح
+   يوسّع إطار العرض إلى ~690px فينزاح الشريط السفليّ والنوافذ الثابتة.
+   الترويسة تبقى بعرض الشاشة وتُمرَّر داخلياً عند الضيق، وتنكمش الأزرار. */
+@media (max-width:768px){
+  #top{min-width:0; max-width:100%; overflow-x:auto; overflow-y:hidden;
+       scrollbar-width:none; gap:6px; padding-inline:8px}
+  #top::-webkit-scrollbar{display:none}
+  #top > *{flex:none}
+  #qat{gap:0}
+  #qat button{width:36px; height:40px}
+  #qat .dv{margin:0 1px}
+  #top .ver,#top .tip{display:none}
+  #ribbon{inset-inline:0; width:auto; max-width:100vw}
+  html,body{overflow-x:hidden}
+  /* العائمات تعلو الشريط السفليّ لا تركبه */
+  body .hb-fab{bottom:calc(var(--rbH,64px) + 58px)}
+  body .helpbot{bottom:calc(var(--rbH,64px) + 16px)}
+}
+
+/* ─── 7. ثبات عام (كل العروض باللمس أو الضيقة) ───
+   كانت html,body{overflow-x:hidden} داخل قسم ≤768 وحده، فيفيض العرض
+   جانبياً في 769–1100 و«موقع سطح المكتب». */
+@media (pointer:coarse), (max-width:1100px){
+  html,body{overflow-x:hidden; max-width:100vw}
+  #top{min-width:0; max-width:100%; overflow-x:auto; overflow-y:hidden;
+       scrollbar-width:none}
+  #top::-webkit-scrollbar{display:none}
+  #top > *{flex:none}
+  #work,#stage{min-width:0}
+  #ribbon,#rbPanes{max-width:100vw}
+  /* النوافذ العائمة لا تخرج من الشاشة وزرّ إغلاقها ظاهر */
+  .flt{max-width:calc(100vw - 16px); max-height:calc(100vh - 60px)}
+  #gdFloater,#gdPeek{max-width:calc(100vw - 16px)}
+}
+
+/* ─── 8. «موقع سطح المكتب» على الهاتف (فئة من viewport.js) ─── */
+html.dsk-on-phone #tools{display:flex !important; flex-wrap:wrap}
+html.dsk-on-phone #ribbon.min #rbPanes{display:block}
+html.dsk-on-phone #side, html.dsk-on-phone #sideE{max-width:46vw}
+html.dsk-on-phone .flt{inset-inline-start:8px !important;
+  inset-block-start:60px !important; max-width:92vw}
+
+/* ─── 9. زرّ اللوحة الجانبية على الجوال ───
+   على ≤768 تصير اللوحة الجانبية ورقةً سفلية مخفية (translateY(100%)) ويفتحها
+   #fabDock وحده؛ لكنّه كان يحمل hidden في index.html ولا شيء في JS يُظهره،
+   و[hidden]{display:none!important} العامّ يغلب display:flex — فاختفت اللوحة
+   بلا طريقة لفتحها. نُظهره هنا بخصوصيةٍ أعلى، وعلى جهة البدء كي لا يركب
+   زرّ المساعد (inset-inline-end). */
+@media (max-width:768px){
+  #fabDock[hidden]{display:flex !important}
+  #fabDock{inset-inline-end:auto; inset-inline-start:12px}
+}
